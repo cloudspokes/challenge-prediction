@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Prediction API</title>
+    <style type="text/css">
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      #log {
+        font-family: monospace;
+        background-color: #eee;
+        padding: 1em;
+      }
+      #log p {
+        margin: 0;
+      }
+      #predict {
+        display: none;
+      }
+      #predict label, #predict textarea, #predict button {
+        margin: 1em 0;
+        font-size: 1em;
+        display: block;
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Prediction API: Cloudspokes Submissions</h1>
+    <div id="log">
+    </div>
+    <div id="predict">
+      <textarea id="categories" placeholder=""></textarea>
+      <textarea id="submitters" placeholder=""></textarea>
+      <textarea id="total_prize" placeholder=""></textarea>
+      <textarea id="top_prize" placeholder=""></textarea>
+      <textarea id="challenge_length" placeholder=""></textarea>
+      <button id="go">Submit</button>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      function logMessage(message) {
+        $("#log").append("<p>" + message + "</p>");
+      }
+      $(document).ready(function(e) {
+        $.getJSON("/query/train", function (data) {
+          logMessage("Training started...");
+          var delay = 1000;
+          var checkStatus = function () {
+            logMessage("Checking training status...");
+            $.getJSON("/query/checkStatus", function(data) {
+              if (data && data.response.trainingStatus == 'DONE') {
+                logMessage("Training complete.");
+                $("#predict").show();
+                $("#go").click(function () {
+                  var categories = $("#categories").val();
+                  var submitters = $("#submitters").val();
+                  var total_prize = $("#total_prize").val();
+                  var top_prize = $("#top_prize").val();
+                  var challenge_length = $("#challenge_length").val();
+                  $.ajax({
+                    type: "POST",
+                    url: "/query/predict",
+                    data: {
+                      "categories": categories,
+                      "submitters": submitters,
+                      "total_prize": total_prize,
+                      "top_prize": top_prize,
+                      "challenge_length": challenge_length
+                    },
+                    success: function(data) {
+                      if (data && data.status == 'success') {
+                        logMessage("Predicted value: " + data.response.outputValue);
+                      } else if (data && data.message) {
+                        logMessage(data.message);
+                      }
+                    }
+                  });
+                });
+                return;
+              } else if (data && data.message) {
+                logMessage(data.message);
+              }
+              delay = delay * 2;
+              if (delay > 30000) {
+                // Upper maximum delay.
+                delay = 30000;
+              }
+              logMessage("Checking again in " + (delay / 1000) + " seconds.");
+              setTimeout(checkStatus, delay);
+            });
+          };
+          setTimeout(checkStatus, delay);
+        });
+      })
+    </script>
+  </body>
+</html>

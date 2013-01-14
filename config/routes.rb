@@ -9,4 +9,5 @@ ParasquidCs2001::Application.routes.draw do
     get "generate_prediction_data"
   end
 
+  match '/query' => Prediction, anchor: false
 end

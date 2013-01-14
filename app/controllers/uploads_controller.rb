@@ -28,7 +28,6 @@ class UploadsController < ApplicationController
   def generate_prediction_data
     # drop it like it's hot
     PredictionData.delete_all
-
     PredictionData.generate
   	send_data PredictionData.to_csv, filename: 'prediction_data.csv'
   end
