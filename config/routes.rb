@@ -1,4 +1,6 @@
 ParasquidCs2001::Application.routes.draw do
+  root to: "welcome#index"
+
   get "querying" => 'querying#index'
 
   get "uploads" => 'uploads#index'
