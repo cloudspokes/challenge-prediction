@@ -6,11 +6,11 @@ load 'deploy/assets'
 load "config/recipes/base"
 
 set :rvm_ruby_string, ENV['GEM_HOME'].gsub(/.*\//,"")
-set :application, "MindvalleyDaily"
-set :server_name, 'daily.mindvalley.net'
-set :repository,  "git@github.com:mindvalley/daily.git"
+set :application, "cs2001"
+set :server_name, 'cs2001.parasquid.com'
+set :repository,  "ssh://git@bitbucket.org/parasquid/parasquid-cs2001.git"
 set :git_enable_submodules, true
-set :user, "mvdev"
+set :user, "tristan"
 set :deploy_to, "/home/#{user}/apps/#{application}"
 set :use_sudo, false
 
