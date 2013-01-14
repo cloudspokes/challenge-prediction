@@ -67,7 +67,7 @@ class PredictionData
 		DB[:challenge_participants].each do |row|
 			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
 			lines[row[:"Challenge__r.Challenge_Id__c"]][:submitters] ||= []
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:submitters].push(row[:"Member__r.Name"]) if row[:"Score__c"] > 0
+			lines[row[:"Challenge__r.Challenge_Id__c"]][:submitters].push(row[:"Member__r.Name"])# if row[:"Score__c"] > 0
 			passing_submissions = lines[row[:"Challenge__r.Challenge_Id__c"]][:passing_submissions] ||= 0
 			lines[row[:"Challenge__r.Challenge_Id__c"]][:passing_submissions] = passing_submissions + 1 if row[:"Score__c"] > 75
 		end
