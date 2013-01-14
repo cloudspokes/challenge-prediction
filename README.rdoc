@@ -1,0 +1,13 @@
+There are four determinants of the number of passing submissions of a challenge:
+* Categories (whether Ruby, or both Ruby and Heroku)
+* Submitters (whether parasquid and aproxacs both submitted, or just parasquid)
+* Prizes (in dollar amounts; prizes not in dollars hav to be quantified)
+* Challenge Length (in days)
+
+Note that we don't consider the following:
+* Number of submissions - although logically the more submissions there are the higher the number of passing submissions, it doesn't drive the submission pass rate as much as the other determinants. More likely the relationship is: the higher the number of passing submissions the more submissions there are (a reverse relationship)
+* We don't calculate separatelt whether a member has a better batting average in Ruby vs. in Java challenges, as that data is already embedded in the prediction data above. We don't want to impose our own algorithm over Google's (or maybe we can do our own type of analysis and prediction algorithms, but it has to be separate from the Google Prediction algorithms).
+
+
+https://developers.google.com/prediction/docs/hello_world
+http://code.google.com/p/google-api-ruby-client/source/browse/prediction/README.md?repo=samples

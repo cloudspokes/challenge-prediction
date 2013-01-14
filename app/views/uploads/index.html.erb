@@ -1,0 +1,19 @@
+<%= simple_form_for(@upload, url: uploads_challenge_participants_path, :html => {:class => 'form-horizontal' }) do |f| %>
+	<%= f.input :data, :as => :file, label: 'challenge-participants-export.csv' %>
+	<%= f.button :submit %>
+	<%= @challenge_participants.count %> records
+<% end %>
+
+<%= simple_form_for(@upload, url: uploads_challlenges_path, :html => {:class => 'form-horizontal' }) do |f| %>
+	<%= f.input :data, :as => :file, label: 'challenge-export.csv' %>
+	<%= f.button :submit %>
+	<%= @challenges.count %> records
+<% end %>
+
+<%= simple_form_for(@upload, url: uploads_challenge_categories_path, :html => {:class => 'form-horizontal' }) do |f| %>
+	<%= f.input :data, :as => :file, label: 'challenge-categories-export.csv' %>
+	<%= f.button :submit %>
+	<%= @challenge_categories.count %> records
+<% end %>
+
+<%= link_to 'Generate Prediction Data', uploads_generate_prediction_data_path, :class => 'btn btn-primary' %>
