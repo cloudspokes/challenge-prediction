@@ -1,18 +1,29 @@
 class PredictionData
 	include Mongoid::Document
 
-	field :categories, type: Array, default: []
+	field :platforms, type: Array, default: []
+	field :technologies, type: Array, default: []
 	field :submitters, type: Array, default: []
 	field :total_prize, type: Integer, default: 0
 	field :top_prize, type: Integer, default: 0
 	field :challenge_length, type: Integer, default: 0
 	field :passing_submissions, type: Float, default: 0.0
 
-	def self.import_challenge_categories(data)
-		column_name = :challenge_categories
+	def self.import_challenge_platforms(data)
+		column_name = :challenge_platforms
 		DB.drop_table?(column_name)
 		DB.create_table(column_name) do
-			String "Category__r.Name"
+			String "Platform__r.Name"
+			String "Challenge__r.Challenge_Id__c"
+		end
+		insert_into_database(data, column_name)
+	end
+
+	def self.import_challenge_technologies(data)
+		column_name = :challenge_technologies
+		DB.drop_table?(column_name)
+		DB.create_table(column_name) do
+			String "Technology__r.Name"
 			String "Challenge__r.Challenge_Id__c"
 		end
 		insert_into_database(data, column_name)
@@ -43,15 +54,21 @@ class PredictionData
 
 	def self.generate
 		# generate the prediction data lines
-		# categories.join(' '), submitters.join(' '), total_prize, top_prize, challenge_length, passing_submissions
+		# platforms.join(' '), technologies.join(' '), submitters.join(' '), total_prize, top_prize, challenge_length, passing_submissions
 		lines = {}
 
-		# reduce the challenge categories into lines and arrays by creating a hash
+		# reduce the challenge platforms into lines and arrays by creating a hash
 		# {:challenge_id => [category1, category2, category3]}
-		DB[:challenge_categories].each do |row|
+		DB[:challenge_platforms].each do |row|
 			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:categories] ||= []
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:categories].push(row[:"Category__r.Name"])
+			lines[row[:"Challenge__r.Challenge_Id__c"]][:platforms] ||= []
+			lines[row[:"Challenge__r.Challenge_Id__c"]][:platforms].push(row[:"Platform__r.Name"])
+		end
+
+		DB[:challenge_technologies].each do |row|
+			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
+			lines[row[:"Challenge__r.Challenge_Id__c"]][:technologies] ||= []
+			lines[row[:"Challenge__r.Challenge_Id__c"]][:technologies].push(row[:"Technology__r.Name"])
 		end
 
 		# include the challenge info
@@ -84,7 +101,8 @@ class PredictionData
     CSV.generate(options) do |csv|
       self.all.each do |elem|
 				csv << [elem.passing_submissions,
-					"#{elem.categories.sort.join(' ')}",
+					"#{elem.platforms.sort.join(' ')}",
+					"#{elem.technologies.sort.join(' ')}",
 					"#{elem.submitters.sort.join(' ')}",
 					elem.total_prize,
 					elem.top_prize,

@@ -5,7 +5,8 @@ ParasquidCs2001::Application.routes.draw do
 
   get "uploads" => 'uploads#index'
   namespace :uploads do
-    post "challenge_categories"
+    post "challenge_platforms"
+    post "challenge_technologies"
     post "challlenges"
     post "challenge_participants"
     get "generate_prediction_data"

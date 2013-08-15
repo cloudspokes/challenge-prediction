@@ -4,12 +4,19 @@ class UploadsController < ApplicationController
 		@upload = Upload.new
 		@challenge_participants = (DB[:challenge_participants] if DB.table_exists?(:challenge_participants)) || []
 		@challenges = (DB[:challenges] if DB.table_exists?(:challenges))  || []
-		@challenge_categories = (DB[:challenge_categories] if DB.table_exists?(:challenge_categories))  || []
+    @challenge_platforms = (DB[:challenge_platforms] if DB.table_exists?(:challenge_platforms))  || []
+		@challenge_technologies = (DB[:challenge_technologies] if DB.table_exists?(:challenge_technologies))  || []
 	end
 
-  def challenge_categories
+  def challenge_platforms
+    data = CSV.new params[:upload][:data].tempfile
+    PredictionData.import_challenge_platforms(data.to_hash)
+    redirect_to uploads_path
+  end
+
+  def challenge_technologies
 		data = CSV.new params[:upload][:data].tempfile
-  	PredictionData.import_challenge_categories(data.to_hash)
+  	PredictionData.import_challenge_technologies(data.to_hash)
   	redirect_to uploads_path
   end
 

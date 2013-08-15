@@ -21,11 +21,22 @@
 </div>
 
 <div class="well well-small">
-	<%= simple_form_for(@upload, url: uploads_challenge_categories_path, :html => {:class => 'form-horizontal' }) do |f| %>
-		<%= f.input :data, :as => :file, label: 'challenge-categories-export.csv' %>
+	<%= simple_form_for(@upload, url: uploads_challenge_platforms_path, :html => {:class => 'form-horizontal' }) do |f| %>
+		<%= f.input :data, :as => :file, label: 'challenge-platforms-export.csv' %>
 		<div class="control-group">
 	    <div class="controls">
-	      <button type="submit" class="btn btn-success">Create Upload</button> <%= @challenge_categories.count %> records
+	      <button type="submit" class="btn btn-success">Create Upload</button> <%= @challenge_platforms.count %> records
+	    </div>
+	  </div>
+	<% end %>
+</div>
+
+<div class="well well-small">
+	<%= simple_form_for(@upload, url: uploads_challenge_technologies_path, :html => {:class => 'form-horizontal' }) do |f| %>
+		<%= f.input :data, :as => :file, label: 'challenge-technologies-export.csv' %>
+		<div class="control-group">
+	    <div class="controls">
+	      <button type="submit" class="btn btn-success">Create Upload</button> <%= @challenge_technologies.count %> records
 	    </div>
 	  </div>
 	<% end %>
