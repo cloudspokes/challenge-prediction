@@ -40,6 +40,9 @@ gem 'rvm-capistrano'
 # To use debugger
 # gem 'debugger'
 
+gem 'foreman'
+gem 'unicorn'
+
 gem 'sequel'
 gem 'sextant'
 gem 'simple_form'

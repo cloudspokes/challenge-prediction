@@ -16,3 +16,5 @@
 #/config/*.p12
 .DS_Store
 .elasticbeanstalk/
+
+.env
