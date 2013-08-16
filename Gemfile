@@ -42,6 +42,7 @@ gem 'rvm-capistrano'
 
 gem 'foreman'
 gem 'unicorn'
+gem 'httparty'
 
 gem 'sequel'
 gem 'sextant'
