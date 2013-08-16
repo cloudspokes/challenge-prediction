@@ -9,7 +9,8 @@ class Prediction < Sinatra::Base
 	# FILL IN THIS SECTION
 	# ------------------------
 	# APP_NAME : application name
-	# PREDICTION_DATA_OBJECT : This is the {bucket}/{object} name you are using
+	# GOOGLE_STORAGE_BUCKET_NAME : This is the {bucket} name you are using
+	# PREDICTION_DATA_OBJECT : This is the {object} name you are using
 	# GOOGLE_CLIENT_EMAIL : Email of service account
 	# GOOGLE_KEYFILE : Filename of the private key
 	# GOOGLE_PASSPHRASE : Passphrase for private key
@@ -43,7 +44,7 @@ class Prediction < Sinatra::Base
 	get '/train' do
 	  training = prediction.trainedmodels.insert.request_schema.new
 	  training.id = 'challengeinfo'
-	  training.storage_data_location = ENV["PREDICTION_DATA_OBJECT"]
+	  training.storage_data_location = File.join(ENV["GOOGLE_STORAGE_BUCKET_NAME"], ENV["PREDICTION_DATA_OBJECT"])
 	  result = api_client.execute(
 	    :api_method => prediction.trainedmodels.insert,
 	    :headers => {'Content-Type' => 'application/json'},

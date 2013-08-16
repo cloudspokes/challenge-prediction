@@ -4,6 +4,8 @@ ParasquidCs2001::Application.routes.draw do
   get "querying" => 'querying#index'
 
   get "uploads" => 'uploads#index'
+  post "upload_prediction_data" => "uploads#upload_prediction_data"
+  
   namespace :uploads do
     post "challenge_platforms"
     post "challenge_technologies"

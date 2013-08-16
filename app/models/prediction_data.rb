@@ -1,3 +1,5 @@
+require "csv"
+
 class PredictionData
 	include Mongoid::Document
 

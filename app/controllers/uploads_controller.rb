@@ -38,6 +38,17 @@ class UploadsController < ApplicationController
     PredictionData.generate
   	send_data PredictionData.to_csv, filename: 'prediction_data.csv'
   end
+
+  def upload_prediction_data
+    PredictionData.delete_all
+    PredictionData.generate
+
+    gs = GoogleStorage.new
+    gs.upload_prediction_data(PredictionData.to_csv)
+
+    redirect_to root_path, notice: 'Successfully uploaded Prediction Data'
+  end
+
 end
 
 class CSV
