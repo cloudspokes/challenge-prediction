@@ -79,7 +79,7 @@ class PredictionData
 			lines[row[:"Challenge_Id__c"]][:challenge_length] = row[:"Length_of_Contest__c"]
 			lines[row[:"Challenge_Id__c"]][:top_prize] = row[:"Top_Prize__c"].to_s.gsub('$','').gsub(',','').to_i
 			lines[row[:"Challenge_Id__c"]][:total_prize] = row[:"Total_Prize_Money__c"]
-			puts lines[row[:"Challenge_Id__c"]][:top_prize]
+			# puts lines[row[:"Challenge_Id__c"]][:top_prize]
 		end
 
 		# include the submitters
