@@ -82,8 +82,9 @@ test:
 production:
   sessions:
     default:
-      database: parasquid_cs2001_production
-      hosts:
-        - localhost:27017
+      uri: <%= ENV['MONGOHQ_URL'] %>
       options:
-  options:
+        skip_version_check: true
+        safe: true
+
+
