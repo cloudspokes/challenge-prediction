@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DIR="."
+SERVER="localhost:5000"
+
+if [ -f $DIR/challenge-export.csv ] && 
+   [ -f $DIR/challenge-participants-export.csv ] && 
+   [ -f $DIR/challenge-platforms-export.csv ] && 
+   [ -f $DIR/challenge-technologies-export.csv ]
+then
+  echo -e "\nUsing API Server, $SERVER"
+
+  echo -e "\nUploding challenges...."
+  curl -F upload[data]=@$DIR/challenge-export.csv http://$SERVER/uploads/challlenges  > /dev/null
+  echo -e "\nUploding challenge_participants...."
+  curl -F upload[data]=@$DIR/challenge-participants-export.csv http://$SERVER/uploads/challenge_participants  > /dev/null
+  echo -e "\nUploding challenge_platforms...."
+  curl -F upload[data]=@$DIR/challenge-platforms-export.csv http://$SERVER/uploads/challenge_platforms > /dev/null
+  echo -e "\nUploding challenge_technologies...."
+  curl -F upload[data]=@$DIR/challenge-technologies-export.csv http://$SERVER/uploads/challenge_technologies > /dev/null
+
+  echo -e "\nGenerating prediction_data.csv at Google Cloud Storage...."
+  curl -d "" http://$SERVER/upload_prediction_data > /dev/null
+
+  echo -e "\nDone"
+else
+  echo "Files are not found!"
+fi
