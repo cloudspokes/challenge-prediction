@@ -1,26 +1,32 @@
-require 'csv'
 class UploadsController < ApplicationController
 	def index
 		@upload = Upload.new
-		@challenge_participants = (DB[:challenge_participants] if DB.table_exists?(:challenge_participants)) || []
-		@challenges = (DB[:challenges] if DB.table_exists?(:challenges))  || []
-		@challenge_categories = (DB[:challenge_categories] if DB.table_exists?(:challenge_categories))  || []
+		@challenge_participants = PredictionData.session[:challenge_participants].find
+		@challenges = PredictionData.session[:challenges].find
+    @challenge_platforms = PredictionData.session[:challenge_platforms].find
+		@challenge_technologies = PredictionData.session[:challenge_technologies].find
 	end
 
-  def challenge_categories
-		data = CSV.new params[:upload][:data].tempfile
-  	PredictionData.import_challenge_categories(data.to_hash)
+  def challenge_platforms
+    data = HashableCSV.new params[:upload][:data].tempfile
+    PredictionData.import_challenge_platforms(data.to_hash)
+    redirect_to uploads_path
+  end
+
+  def challenge_technologies
+		data = HashableCSV.new params[:upload][:data].tempfile
+  	PredictionData.import_challenge_technologies(data.to_hash)
   	redirect_to uploads_path
   end
 
   def challlenges
-		data = CSV.new params[:upload][:data].tempfile
+		data = HashableCSV.new params[:upload][:data].tempfile
   	PredictionData.import_challenges(data.to_hash)
   	redirect_to uploads_path
   end
 
   def challenge_participants
-		data = CSV.new params[:upload][:data].tempfile
+		data = HashableCSV.new params[:upload][:data].tempfile
   	PredictionData.import_challenge_participants(data.to_hash)
   	redirect_to uploads_path, notice: 'Upload completed'
   end
@@ -31,12 +37,15 @@ class UploadsController < ApplicationController
     PredictionData.generate
   	send_data PredictionData.to_csv, filename: 'prediction_data.csv'
   end
-end
 
-class CSV
-	def to_hash
-		headers = self.shift.map {|i| i.to_s }
-		string_data = self.map {|row| row.map {|cell| cell.to_s } }
-		array_of_hashes = string_data.map {|row| Hash[*headers.zip(row).flatten] }
-	end
+  def upload_prediction_data
+    PredictionData.delete_all
+    PredictionData.generate
+
+    gs = GoogleStorage.new
+    gs.upload_prediction_data(PredictionData.to_csv)
+
+    redirect_to root_path, notice: 'Successfully uploaded Prediction Data'
+  end
+
 end

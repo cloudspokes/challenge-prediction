@@ -8,19 +8,22 @@ class Prediction < Sinatra::Base
 
 	# FILL IN THIS SECTION
 	# ------------------------
-	DATA_OBJECT = "cs2001/prediction_data.csv" # This is the {bucket}/{object} name you are using
-	CLIENT_EMAIL = "133594760435@developer.gserviceaccount.com" # Email of service account
-	KEYFILE = 'YOUR_KEY_FILE.p12' # Filename of the private key
-	PASSPHRASE = 'notasecret' # Passphrase for private key
+	# APP_NAME : application name
+	# GOOGLE_STORAGE_BUCKET_NAME : This is the {bucket} name you are using
+	# PREDICTION_DATA_OBJECT : This is the {object} name you are using
+	# GOOGLE_CLIENT_EMAIL : Email of service account
+	# GOOGLE_KEYFILE : Filename of the private key
+	# GOOGLE_PASSPHRASE : Passphrase for private key
 	# ------------------------
 
 	configure do
-	  client = Google::APIClient.new
+	  client = Google::APIClient.new(application_name: ENV["APP_NAME"])
 
 	  # Authorize service account
-	  key = Google::APIClient::PKCS12.load_key(File.join(Rails.root, 'config', KEYFILE), PASSPHRASE)
+	  keyfile = Rails.root.join 'config', ENV["GOOGLE_KEYFILE"]
+	  key = Google::APIClient::PKCS12.load_key(keyfile, ENV["GOOGLE_PASSPHRASE"])
 	  asserter = Google::APIClient::JWTAsserter.new(
-	     CLIENT_EMAIL,
+	     ENV["GOOGLE_CLIENT_EMAIL"],
 	     'https://www.googleapis.com/auth/prediction',
 	     key)
 	  client.authorization = asserter.authorize()
@@ -41,7 +44,7 @@ class Prediction < Sinatra::Base
 	get '/train' do
 	  training = prediction.trainedmodels.insert.request_schema.new
 	  training.id = 'challengeinfo'
-	  training.storage_data_location = DATA_OBJECT
+	  training.storage_data_location = File.join(ENV["GOOGLE_STORAGE_BUCKET_NAME"], ENV["PREDICTION_DATA_OBJECT"])
 	  result = api_client.execute(
 	    :api_method => prediction.trainedmodels.insert,
 	    :headers => {'Content-Type' => 'application/json'},
@@ -73,7 +76,8 @@ class Prediction < Sinatra::Base
 	  input = prediction.trainedmodels.predict.request_schema.new
 	  input.input = {}
 	  input.input.csv_instance = [
-	  	params["categories"],
+	  	params["platforms"],
+	  	params["technologies"],
 	  	params["submitters"],
 	  	params["total_prize"],
 	  	params["top_prize"],

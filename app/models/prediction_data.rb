@@ -1,80 +1,87 @@
+require "csv"
+
 class PredictionData
 	include Mongoid::Document
 
-	field :categories, type: Array, default: []
+	field :platforms, type: Array, default: []
+	field :technologies, type: Array, default: []
 	field :submitters, type: Array, default: []
 	field :total_prize, type: Integer, default: 0
 	field :top_prize, type: Integer, default: 0
 	field :challenge_length, type: Integer, default: 0
 	field :passing_submissions, type: Float, default: 0.0
 
-	def self.import_challenge_categories(data)
-		column_name = :challenge_categories
-		DB.drop_table?(column_name)
-		DB.create_table(column_name) do
-			String "Category__r.Name"
-			String "Challenge__r.Challenge_Id__c"
-		end
-		insert_into_database(data, column_name)
+	def self.session
+		@session ||= Mongoid::Sessions.default
+	end
+
+	def self.import_challenge_platforms(data)
+		column_name = :challenge_platforms
+		session[column_name].drop
+		session[column_name].insert(data)
+	end
+
+	def self.import_challenge_technologies(data)
+		column_name = :challenge_technologies
+		session[column_name].drop
+		session[column_name].insert(data)
 	end
 
 	def self.import_challenges(data)
 		column_name = :challenges
-		DB.drop_table?(column_name)
-		DB.create_table(column_name) do
-			String "Challenge_Id__c"
-			Integer "Length_of_Contest__c"
-			String "Top_Prize__c" # this field has dollar signs :(
-			Integer "Total_Prize_Money__c"
-		end
-		insert_into_database(data, column_name)
+		session[column_name].drop
+		session[column_name].insert(data)
 	end
 
 	def self.import_challenge_participants(data)
 		column_name = :challenge_participants
-		DB.drop_table?(column_name)
-		DB.create_table(column_name) do
-			String "Member__r.Name"
-			String "Challenge__r.Challenge_Id__c"
-			Float "Score__c" # a score of more than 75.00 is a valid submission
-		end
-		insert_into_database(data, column_name)
+		session[column_name].drop
+		session[column_name].insert(data)
 	end
 
 	def self.generate
 		# generate the prediction data lines
-		# categories.join(' '), submitters.join(' '), total_prize, top_prize, challenge_length, passing_submissions
+		# platforms.join(' '), technologies.join(' '), submitters.join(' '), total_prize, top_prize, challenge_length, passing_submissions
 		lines = {}
 
-		# reduce the challenge categories into lines and arrays by creating a hash
-		# {:challenge_id => [category1, category2, category3]}
-		DB[:challenge_categories].each do |row|
-			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:categories] ||= []
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:categories].push(row[:"Category__r.Name"])
+		# reduce the challenge platforms into lines and arrays by creating a hash
+		session[:challenge_platforms].find.each do |row|
+			cid = row["Challenge__r.Challenge_Id__c"]
+			lines[cid] ||= {}
+			lines[cid][:platforms] ||= []
+			lines[cid][:platforms].push(row["Platform__r.Name"])
+		end
+
+		session[:challenge_technologies].find.each do |row|
+			cid = row["Challenge__r.Challenge_Id__c"]
+			lines[cid] ||= {}
+			lines[cid][:technologies] ||= []
+			lines[cid][:technologies].push(row["Technology__r.Name"])
 		end
 
 		# include the challenge info
-		DB[:challenges].each do |row|
-			lines[row[:"Challenge_Id__c"]] ||= {}
-			lines[row[:"Challenge_Id__c"]][:challenge_length] = row[:"Length_of_Contest__c"]
-			lines[row[:"Challenge_Id__c"]][:top_prize] = row[:"Top_Prize__c"].to_s.gsub('$','').gsub(',','').to_i
-			lines[row[:"Challenge_Id__c"]][:total_prize] = row[:"Total_Prize_Money__c"]
-			puts lines[row[:"Challenge_Id__c"]][:top_prize]
+		session[:challenges].find.each do |row|
+			cid = row["Challenge_Id__c"]
+			lines[cid] ||= {}
+			lines[cid][:challenge_length] = row["Length_of_Contest__c"].to_i
+			lines[cid][:top_prize] = row["Top_Prize__c"].to_s.gsub('$','').gsub(',','').to_i
+			lines[cid][:total_prize] = row["Total_Prize_Money__c"].to_i
 		end
 
 		# include the submitters
-		DB[:challenge_participants].each do |row|
-			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:submitters] ||= []
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:submitters].push(row[:"Member__r.Name"]) if row[:"Score__c"] > 0
-			passing_submissions = lines[row[:"Challenge__r.Challenge_Id__c"]][:passing_submissions] ||= 0
-			lines[row[:"Challenge__r.Challenge_Id__c"]][:passing_submissions] = passing_submissions + 1 if row[:"Score__c"] > 75
+		session[:challenge_participants].find.each do |row|
+			cid = row["Challenge__r.Challenge_Id__c"]
+			score = row["Score__c"].to_f
+			lines[cid] ||= {}
+			lines[cid][:submitters] ||= []
+			lines[cid][:submitters].push(row["Member__r.Name"]) if score > 0
+			lines[cid][:passing_submissions] ||= 0
+			lines[cid][:passing_submissions] += 1 if score > 75
 		end
 
 		# create the database
-		lines.each do |line|
-			PredictionData.create line.last
+		lines.each do |cid, data|
+			PredictionData.create data
 		end
 
 		# clear in-memory database
@@ -84,7 +91,8 @@ class PredictionData
     CSV.generate(options) do |csv|
       self.all.each do |elem|
 				csv << [elem.passing_submissions,
-					"#{elem.categories.sort.join(' ')}",
+					"#{elem.platforms.sort.join(' ')}",
+					"#{elem.technologies.sort.join(' ')}",
 					"#{elem.submitters.sort.join(' ')}",
 					elem.total_prize,
 					elem.top_prize,

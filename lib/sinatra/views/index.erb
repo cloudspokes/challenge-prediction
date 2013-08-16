@@ -31,7 +31,8 @@
     <div id="log">
     </div>
     <div id="predict">
-      <textarea id="categories" placeholder="categories e.g. Ruby HTML5 Heroku Google"></textarea>
+      <textarea id="platforms" placeholder="platforms e.g. Heroku Google"></textarea>
+      <textarea id="technologies" placeholder="technologies e.g. Ruby HTML5"></textarea>
       <textarea id="submitters" placeholder="submitters e.g. parasquid aproxacs talesforce wcheung"></textarea>
       <textarea id="total_prize" placeholder="total prize e.g. 2000"></textarea>
       <textarea id="top_prize" placeholder="top prize e.g. 1000"></textarea>
@@ -54,7 +55,8 @@
                 logMessage("Training complete.");
                 $("#predict").show();
                 $("#go").click(function () {
-                  var categories = $("#categories").val();
+                  var platforms = $("#platforms").val();
+                  var technologies = $("#technologies").val();
                   var submitters = $("#submitters").val();
                   var total_prize = $("#total_prize").val();
                   var top_prize = $("#top_prize").val();
@@ -63,7 +65,8 @@
                     type: "POST",
                     url: "/query/predict",
                     data: {
-                      "categories": categories,
+                      "platforms": platforms,
+                      "technologies": technologies,
                       "submitters": submitters,
                       "total_prize": total_prize,
                       "top_prize": top_prize,

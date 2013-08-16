@@ -5,8 +5,6 @@ gem 'rails', '3.2.9'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3-ruby'
-
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
@@ -39,6 +37,10 @@ gem 'rvm-capistrano'
 
 # To use debugger
 # gem 'debugger'
+
+gem 'foreman'
+gem 'unicorn'
+gem 'httparty'
 
 gem 'sequel'
 gem 'sextant'
