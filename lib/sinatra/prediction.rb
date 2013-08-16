@@ -76,7 +76,8 @@ class Prediction < Sinatra::Base
 	  input = prediction.trainedmodels.predict.request_schema.new
 	  input.input = {}
 	  input.input.csv_instance = [
-	  	params["categories"],
+	  	params["platforms"],
+	  	params["technologies"],
 	  	params["submitters"],
 	  	params["total_prize"],
 	  	params["top_prize"],

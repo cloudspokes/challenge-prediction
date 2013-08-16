@@ -60,7 +60,6 @@ class PredictionData
 		lines = {}
 
 		# reduce the challenge platforms into lines and arrays by creating a hash
-		# {:challenge_id => [category1, category2, category3]}
 		DB[:challenge_platforms].each do |row|
 			lines[row[:"Challenge__r.Challenge_Id__c"]] ||= {}
 			lines[row[:"Challenge__r.Challenge_Id__c"]][:platforms] ||= []
