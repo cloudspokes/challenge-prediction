@@ -3,7 +3,7 @@
 DIR="."
 SERVER="localhost:5000"
 
-if [ -f $DIR/challenge-export.csv ] && 
+if [ -f $DIR/challenges-export.csv ] && 
    [ -f $DIR/challenge-participants-export.csv ] && 
    [ -f $DIR/challenge-platforms-export.csv ] && 
    [ -f $DIR/challenge-technologies-export.csv ]
@@ -11,7 +11,7 @@ then
   echo -e "\nUsing API Server, $SERVER"
 
   echo -e "\nUploding challenges...."
-  curl -F upload[data]=@$DIR/challenge-export.csv http://$SERVER/uploads/challlenges  > /dev/null
+  curl -F upload[data]=@$DIR/challenges-export.csv http://$SERVER/uploads/challlenges  > /dev/null
   echo -e "\nUploding challenge_participants...."
   curl -F upload[data]=@$DIR/challenge-participants-export.csv http://$SERVER/uploads/challenge_participants  > /dev/null
   echo -e "\nUploding challenge_platforms...."

@@ -1,5 +1,5 @@
 <h1>Welcome to the Cloudspokes Google Prediction API Challenge</h1>
-<h2>You need to perform these steps</h2>
+<h4>You need to perform these steps</h4>
 <ol>
 	<li><%= link_to "Upload", uploads_path %> the data exports</li>
 	<li><%= link_to "Download", uploads_generate_prediction_data_path %> the prediction data</li>
@@ -14,19 +14,30 @@
   <li>Download <a href="/feed_data">feed_data script</a> </li>
   <li>
     Make it executable
-    <pre> 
-      chmod +x feed_data    
-    </pre>
+    <pre> chmod +x feed_data </pre>
   </li>
   <li>
     Change script's configuration
-    <pre> 
-      DIR="."                 # directory that csv files are
-      SERVER="localhost:5000" # the host name of the server
-    </pre>
+    <pre>  DIR="."                 # directory that csv files are
+  SERVER="localhost:5000" # the host name of the server </pre>
   </li>
   <li> 
     Execute the script. <br/>
     It will upload csv files and generates prediction_data.csv at the Google Cloud Storage
   </li>
 </ol>
+
+<p>Note : Requried csv files are </p>
+<pre>  challenges-export.csv 
+  challenge-participatns-export.csv
+  challenge-platforms-export.csv
+  challenge-technologies-export.csv
+</pre>
+
+<hr>
+<h4>Or You can use rake task to generate prediction data to the Google Cloud Storage</h4>
+<p>
+  It assumes that csv files are in Google Cloud Storage, so you need to upload csv files to the Google Storage first.
+</p>
+<p> And then, </p>
+<pre>foreman run rake feed_data</pre>
